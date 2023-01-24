@@ -1,0 +1,26 @@
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 500
+  servlet:
+    context-path: /api/service/
+
+spring:
+  application:
+    name: football-league-standings
+
+rest:
+  client:
+    read-timeout: 5000
+    connect-timeout: 3000
+
+football:
+  league:
+    api-key: 9bb66184e0c8145384fd2cc0f7b914ada57b4e8fd2e4d6d586adcc27c257a978
+    base-url: https://apiv3.apifootball.com/
+    action-standings: get_standings
+    action-countries: get_countries
+    action-leagues: get_leagues
+
+jwt:
+  secret: secretkey123
