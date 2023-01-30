@@ -1,13 +1,29 @@
 server:
   port: 8080
+  datasource:
+    url: jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    # url: jdbc:mysql://localhost:3306/user_db
+    username: root
+    password: root
   tomcat:
     connection-timeout: 500
-  servlet:
-    context-path: /api/service/
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        # dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        id:
+          new_generator_mappings: false
 
 spring:
   application:
     name: football-league-standings
+  h2:
+    console:
+      enabled: true
 
 rest:
   client:
@@ -22,5 +38,21 @@ football:
     action-countries: get_countries
     action-leagues: get_leagues
 
-jwt:
-  secret: secretkey123
+# Externalize the configuration for sensitive info
+#football:
+#  league:
+#    api-key: ${FOOTBALL_API_KEY}
+#    base-url: ${FOOTBALL_API_BASE_URL}
+#    action-standings: get_standings
+#    action-countries: get_countries
+#    action-leagues: get_leagues
+
+security:
+  jwt:
+    token:
+      secret-key: secret-key
+      expire-length: 300000 # 5 minutes duration by default: 5 minutes * 60 seconds * 1000 miliseconds
+
+
+UserController:
+  signin: Authenticates user and returns its JWT token.
