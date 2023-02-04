@@ -29,7 +29,7 @@ public class TeamsStandingServiceTest {
         request=new TeamsStandingRequest("England","Championship","Bournemouth");
     }
 
-    @WithMockUser(username = "test11", password = "pwd", roles = "ADMIN")
+    @WithMockUser(username = "test1212", password = "pwd", roles = "ADMIN")
     @Test(expected = TeamsStandingException.class)
     public void testGetTeamStandings() throws Exception {
       TeamStandingDto response=teamsStandingService.getTeamStanding(request);

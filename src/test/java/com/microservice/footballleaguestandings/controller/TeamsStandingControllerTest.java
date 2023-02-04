@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
 @EnableWebSecurity
-@WithMockUser(username = "test1", password = "pwd", roles = "ADMIN")
+@WithMockUser(username = "test12121", password = "pwd", roles = "ADMIN")
 public class TeamsStandingControllerTest {
 
     TeamsStandingRequest requestValid;

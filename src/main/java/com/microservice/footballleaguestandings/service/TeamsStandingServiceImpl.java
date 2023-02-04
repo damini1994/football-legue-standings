@@ -1,6 +1,9 @@
 package com.microservice.footballleaguestandings.service;
 
-import com.microservice.footballleaguestandings.client.TeamsStandingFallback;
+import com.microservice.footballleaguestandings.client.CountryFallback;
+import com.microservice.footballleaguestandings.client.LeagueFallback;
+import com.microservice.footballleaguestandings.client.TeamsFallback;
+import com.microservice.footballleaguestandings.client.TeamsStandingFallbackFactory;
 import com.microservice.footballleaguestandings.dto.TeamStandingDto;
 import com.microservice.footballleaguestandings.exception.TeamsStandingException;
 import com.microservice.footballleaguestandings.log.annotation.Trace;
@@ -23,32 +26,28 @@ import java.util.Objects;
 @Slf4j
 public class TeamsStandingServiceImpl implements  TeamsStandingService{
 
-  private final TeamsStandingFallback teamStandingFallback;
-
   @Autowired
-  public TeamsStandingServiceImpl(TeamsStandingFallback teamStandingFallback) {
-    this.teamStandingFallback = teamStandingFallback;
-  }
+  TeamsStandingFallbackFactory teamsStandingFallbackFactory;
 
   @Trace(type = LogEventType.SERVICE)
   public TeamStandingDto getTeamStanding(TeamsStandingRequest teamsStandingRequest) {
 
     TeamsStanding teamsStandingDefault = getDefaultTeamStanding(teamsStandingRequest);
-    List<Country> countries = getCountries();
+    List<Country> countries = teamsStandingFallbackFactory.getFallback("country", 0);
     Country country = getCountryByName(teamsStandingRequest, countries);
     if (!isValidateCountryResponse(teamsStandingRequest, teamsStandingDefault, country)) {
       return TeamStandingDto.from(teamsStandingDefault);
     }
     teamsStandingDefault.setCountryId(country.getId());
 
-    List<Leagues> leaguesList = getLeagues(country.getId());
+    List<Leagues> leaguesList = teamsStandingFallbackFactory.getFallback("league", country.getId());
     Leagues leagues = getLeaguesByName(teamsStandingRequest, leaguesList);
     if (!isValidLeagueResponse(teamsStandingRequest, teamsStandingDefault, leagues)) {
       return(TeamStandingDto.from(teamsStandingDefault));
     }
     teamsStandingDefault.setLeagueId(leagues.getLeagueId());
 
-    List<TeamsStanding> teamsStandings = getTeamStanding(leagues.getLeagueId());
+    List<TeamsStanding> teamsStandings = teamsStandingFallbackFactory.getFallback("team", leagues.getLeagueId());
     TeamsStanding teamsStanding = getTeamName(teamsStandingRequest, teamsStandings);
     if (!isValidTeamResponse(teamsStandingRequest, teamsStandingDefault, teamsStanding)) {
       return(TeamStandingDto.from(teamsStandingDefault));
@@ -120,18 +119,6 @@ public class TeamsStandingServiceImpl implements  TeamsStandingService{
     teamsStanding.setCountryName(teamsStandingRequest.getCountryName());
     teamsStanding.setLeagueName(teamsStandingRequest.getLeagueName());
     return teamsStanding;
-  }
-
-  private List<Country> getCountries() {
-    return new ArrayList<>(Arrays.asList(teamStandingFallback.getCountries()));
-  }
-
-  private List<Leagues> getLeagues(int countryId) {
-    return new ArrayList<>(Arrays.asList(teamStandingFallback.getLeagues(countryId)));
-  }
-
-  private List<TeamsStanding> getTeamStanding(int leagueId) {
-    return new ArrayList<>(Arrays.asList(teamStandingFallback.getTeamStanding(leagueId)));
   }
 
 }

@@ -119,8 +119,3 @@ CI/CD
 - Assumption is made that Jenkins and Docker host resides on same VM.
 - Pipeline with automatically spawn a container running on port 8080. In case of any conflict change the port in Jenkins file.
 - Create a Jenkins pipeline job.
-
-
-
-##Design Pattern Used
--> Factory Design Pattern
